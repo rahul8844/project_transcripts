@@ -1,0 +1,233 @@
+
+const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: '#f5f5f5',
+    },
+    scrollView: {
+      flex: 1,
+    },
+    header: {
+      padding: 20,
+      backgroundColor: '#fff',
+      alignItems: 'center',
+      borderBottomWidth: 1,
+      borderBottomColor: '#e0e0e0',
+    },
+    title: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: '#2E7D32',
+      marginBottom: 8,
+    },
+    subtitle: {
+      fontSize: 16,
+      color: '#666',
+      textAlign: 'center',
+    },
+    summaryContainer: {
+      flexDirection: 'row',
+      padding: 20,
+      justifyContent: 'space-between',
+    },
+    summaryCard: {
+      flex: 1,
+      backgroundColor: '#fff',
+      padding: 16,
+      borderRadius: 12,
+      alignItems: 'center',
+      marginHorizontal: 4,
+      elevation: 2,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 3.84,
+    },
+    summaryNumber: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: '#333',
+      marginTop: 8,
+      marginBottom: 4,
+    },
+    summaryLabel: {
+      fontSize: 12,
+      color: '#666',
+      textAlign: 'center',
+    },
+    actionContainer: {
+      padding: 20,
+    },
+    actionButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#2E7D32',
+      paddingVertical: 12,
+      paddingHorizontal: 24,
+      borderRadius: 8,
+    },
+    actionButtonText: {
+      color: '#fff',
+      fontSize: 16,
+      fontWeight: '600',
+      marginLeft: 8,
+    },
+    menuItemsContainer: {
+      margin: 20,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: '#333',
+      marginBottom: 16,
+    },
+    emptyState: {
+      padding: 40,
+      alignItems: 'center',
+      backgroundColor: '#fff',
+      borderRadius: 12,
+    },
+    emptyStateText: {
+      fontSize: 18,
+      color: '#666',
+      marginTop: 16,
+      marginBottom: 8,
+    },
+    emptyStateSubtext: {
+      fontSize: 14,
+      color: '#999',
+      textAlign: 'center',
+    },
+    menuItem: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      backgroundColor: '#fff',
+      padding: 16,
+      borderRadius: 12,
+      marginBottom: 12,
+      elevation: 1,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.05,
+      shadowRadius: 2,
+    },
+    menuItemInfo: {
+      flex: 1,
+    },
+    menuItemName: {
+      fontSize: 16,
+      fontWeight: '500',
+      color: '#333',
+      marginBottom: 4,
+    },
+    menuItemTime: {
+      fontSize: 12,
+      color: '#999',
+      marginBottom: 2,
+    },
+    menuItemConfidence: {
+      fontSize: 11,
+      color: '#666',
+      fontStyle: 'italic',
+    },
+    menuItemActions: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    quantityButton: {
+      padding: 8,
+      borderRadius: 20,
+      backgroundColor: '#f5f5f5',
+      marginHorizontal: 2,
+    },
+    quantityText: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: '#333',
+      marginHorizontal: 8,
+      minWidth: 24,
+      textAlign: 'center',
+    },
+    editButton: {
+      padding: 8,
+      borderRadius: 20,
+      backgroundColor: '#e3f2fd',
+      marginLeft: 4,
+    },
+    deleteButton: {
+      padding: 8,
+      borderRadius: 20,
+      backgroundColor: '#ffebee',
+      marginLeft: 4,
+    },
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    modalContent: {
+      backgroundColor: '#fff',
+      borderRadius: 12,
+      padding: 24,
+      width: '80%',
+      maxWidth: 400,
+    },
+    modalTitle: {
+      fontSize: 20,
+      fontWeight: '600',
+      color: '#333',
+      marginBottom: 20,
+      textAlign: 'center',
+    },
+    inputContainer: {
+      marginBottom: 16,
+    },
+    inputLabel: {
+      fontSize: 14,
+      fontWeight: '500',
+      color: '#333',
+      marginBottom: 8,
+    },
+    textInput: {
+      borderWidth: 1,
+      borderColor: '#ddd',
+      borderRadius: 8,
+      padding: 12,
+      fontSize: 16,
+      backgroundColor: '#f9f9f9',
+    },
+    modalActions: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginTop: 24,
+    },
+    modalButton: {
+      flex: 1,
+      paddingVertical: 12,
+      borderRadius: 8,
+      alignItems: 'center',
+      marginHorizontal: 8,
+    },
+    cancelButton: {
+      backgroundColor: '#f5f5f5',
+    },
+    saveButton: {
+      backgroundColor: '#2E7D32',
+    },
+    cancelButtonText: {
+      color: '#666',
+      fontSize: 16,
+      fontWeight: '600',
+    },
+    saveButtonText: {
+      color: '#fff',
+      fontSize: 16,
+      fontWeight: '600',
+    },
+  });
+
+  export default styles;
+  
