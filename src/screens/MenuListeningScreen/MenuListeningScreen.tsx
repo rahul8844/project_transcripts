@@ -8,9 +8,9 @@ import {
   Dimensions,
   Platform,
 } from 'react-native';
-import Voice from 'react-native-voice';
+import Voice from '@react-native-voice/voice';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+// import Icon from 'react-native-vector-icons/MaterialIcons';
 import styles from './styles';
 
 interface MenuItem {
@@ -181,11 +181,11 @@ const MenuListeningScreen: React.FC = () => {
             onPress={isListening ? stopListening : startListening}
             disabled={isProcessing}
           >
-            <Icon 
+            {/* <Icon 
               name={isListening ? 'mic' : 'mic-none'} 
               size={32} 
               color={isListening ? '#fff' : '#2E7D32'} 
-            />
+            /> */}
             <Text style={[styles.listenButtonText, isListening && styles.listeningButtonText]}>
               {isListening ? 'Stop Listening' : 'Start Listening'}
             </Text>
@@ -213,7 +213,7 @@ const MenuListeningScreen: React.FC = () => {
 
           {menuItems.length === 0 ? (
             <View style={styles.emptyState}>
-              <Icon name="restaurant-menu" size={48} color="#ccc" />
+              {/* <Icon name="restaurant-menu" size={48} color="#ccc" /> */}
               <Text style={styles.emptyStateText}>No menu items yet</Text>
               <Text style={styles.emptyStateSubtext}>Start listening to add items</Text>
             </View>
@@ -231,20 +231,20 @@ const MenuListeningScreen: React.FC = () => {
                     style={styles.quantityButton}
                     onPress={() => updateQuantity(item.id, item.quantity - 1)}
                   >
-                    <Icon name="remove" size={20} color="#d32f2f" />
+                    {/* <Icon name="remove" size={20} color="#d32f2f" /> */}
                   </TouchableOpacity>
                   <Text style={styles.quantityText}>{item.quantity}</Text>
                   <TouchableOpacity
                     style={styles.quantityButton}
                     onPress={() => updateQuantity(item.id, item.quantity + 1)}
                   >
-                    <Icon name="add" size={20} color="#2E7D32" />
+                    {/* <Icon name="add" size={20} color="#2E7D32" /> */}
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.deleteButton}
                     onPress={() => removeMenuItem(item.id)}
                   >
-                    <Icon name="delete" size={20} color="#d32f2f" />
+                    {/* <Icon name="delete" size={20} color="#d32f2f" /> */}
                   </TouchableOpacity>
                 </View>
               </View>

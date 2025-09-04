@@ -10,7 +10,7 @@ import {
   Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+// import Icon from 'react-native-vector-icons/MaterialIcons';
 import styles from './styles';
 
 interface MenuItem {
@@ -190,17 +190,17 @@ const NotesScreen: React.FC = () => {
         {/* Summary Cards */}
         <View style={styles.summaryContainer}>
           <View style={styles.summaryCard}>
-            <Icon name="restaurant-menu" size={24} color="#2E7D32" />
+            {/* <Icon name="restaurant-menu" size={24} color="#2E7D32" /> */}
             <Text style={styles.summaryNumber}>{menuItems.length}</Text>
             <Text style={styles.summaryLabel}>Items</Text>
           </View>
           <View style={styles.summaryCard}>
-            <Icon name="shopping-cart" size={24} color="#1976D2" />
+            {/* <Icon name="shopping-cart" size={24} color="#1976D2" /> */}
             <Text style={styles.summaryNumber}>{getTotalItems()}</Text>
             <Text style={styles.summaryLabel}>Total Qty</Text>
           </View>
           <View style={styles.summaryCard}>
-            <Icon name="attach-money" size={24} color="#FF9800" />
+            {/* <Icon name="attach-money" size={24} color="#FF9800" /> */}
             <Text style={styles.summaryNumber}>${getTotalValue()}</Text>
             <Text style={styles.summaryLabel}>Est. Total</Text>
           </View>
@@ -213,7 +213,7 @@ const NotesScreen: React.FC = () => {
             onPress={exportNotes}
             disabled={menuItems.length === 0}
           >
-            <Icon name="file-download" size={20} color="#fff" />
+            {/* <Icon name="file-download" size={20} color="#fff" /> */}
             <Text style={styles.actionButtonText}>Export Notes</Text>
           </TouchableOpacity>
         </View>
@@ -224,7 +224,7 @@ const NotesScreen: React.FC = () => {
           
           {menuItems.length === 0 ? (
             <View style={styles.emptyState}>
-              <Icon name="note" size={48} color="#ccc" />
+              {/* <Icon name="note" size={48} color="#ccc" /> */}
               <Text style={styles.emptyStateText}>No menu items captured yet</Text>
               <Text style={styles.emptyStateSubtext}>
                 Use the Listen to Menu feature to start capturing items
@@ -247,26 +247,26 @@ const NotesScreen: React.FC = () => {
                     style={styles.quantityButton}
                     onPress={() => updateQuantity(item.id, item.quantity - 1)}
                   >
-                    <Icon name="remove" size={20} color="#d32f2f" />
+                    {/* <Icon name="remove" size={20} color="#d32f2f" /> */}
                   </TouchableOpacity>
                   <Text style={styles.quantityText}>{item.quantity}</Text>
                   <TouchableOpacity
                     style={styles.quantityButton}
                     onPress={() => updateQuantity(item.id, item.quantity + 1)}
                   >
-                    <Icon name="add" size={20} color="#2E7D32" />
+                    {/* <Icon name="add" size={20} color="#2E7D32" /> */}
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.editButton}
                     onPress={() => handleEditItem(item)}
                   >
-                    <Icon name="edit" size={20} color="#1976D2" />
+                    {/* <Icon name="edit" size={20} color="#1976D2" /> */}
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.deleteButton}
                     onPress={() => removeItem(item.id)}
                   >
-                    <Icon name="delete" size={20} color="#d32f2f" />
+                    {/* <Icon name="delete" size={20} color="#d32f2f" /> */}
                   </TouchableOpacity>
                 </View>
               </View>

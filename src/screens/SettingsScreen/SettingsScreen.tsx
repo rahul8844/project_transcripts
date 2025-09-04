@@ -9,7 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+// import Icon from 'react-native-vector-icons/MaterialIcons';
 import styles from './styles';
 
 const SettingsScreen: React.FC = () => {
@@ -83,7 +83,7 @@ const SettingsScreen: React.FC = () => {
           
           <View style={styles.settingItem}>
             <View style={styles.settingInfo}>
-              <Icon name="mic" size={24} color="#2E7D32" />
+              {/* <Icon name="mic" size={24} color="#2E7D32" /> */}
               <View style={styles.settingText}>
                 <Text style={styles.settingLabel}>Microphone Access</Text>
                 <Text style={styles.settingDescription}>
@@ -108,7 +108,7 @@ const SettingsScreen: React.FC = () => {
           
           <View style={styles.settingItem}>
             <View style={styles.settingInfo}>
-              <Icon name="save" size={24} color="#1976D2" />
+              {/* <Icon name="save" size={24} color="#1976D2" /> */}
               <View style={styles.settingText}>
                 <Text style={styles.settingLabel}>Auto-save</Text>
                 <Text style={styles.settingDescription}>
@@ -126,7 +126,7 @@ const SettingsScreen: React.FC = () => {
 
           <View style={styles.settingItem}>
             <View style={styles.settingInfo}>
-              <Icon name="notifications" size={24} color="#FF9800" />
+              {/* <Icon name="notifications" size={24} color="#FF9800" /> */}
               <View style={styles.settingText}>
                 <Text style={styles.settingLabel}>Notifications</Text>
                 <Text style={styles.settingDescription}>
@@ -144,7 +144,7 @@ const SettingsScreen: React.FC = () => {
 
           <View style={styles.settingItem}>
             <View style={styles.settingInfo}>
-              <Icon name="dark-mode" size={24} color="#7B1FA2" />
+              {/* <Icon name="dark-mode" size={24} color="#7B1FA2" /> */}
               <View style={styles.settingText}>
                 <Text style={styles.settingLabel}>Dark Mode</Text>
                 <Text style={styles.settingDescription}>
@@ -167,12 +167,12 @@ const SettingsScreen: React.FC = () => {
           <Text style={styles.sectionTitle}>Data Management</Text>
           
           <TouchableOpacity style={styles.actionButton} onPress={handleExportData}>
-            <Icon name="file-download" size={20} color="#fff" />
+            {/* <Icon name="file-download" size={20} color="#fff" /> */}
             <Text style={styles.actionButtonText}>Export All Data</Text>
           </TouchableOpacity>
           
           <TouchableOpacity style={[styles.actionButton, styles.dangerButton]} onPress={handleClearData}>
-            <Icon name="delete-forever" size={20} color="#fff" />
+            {/* <Icon name="delete-forever" size={20} color="#fff" /> */}
             <Text style={styles.actionButtonText}>Clear All Data</Text>
           </TouchableOpacity>
         </View>
@@ -182,9 +182,9 @@ const SettingsScreen: React.FC = () => {
           <Text style={styles.sectionTitle}>About</Text>
           
           <TouchableOpacity style={styles.aboutButton} onPress={handleAbout}>
-            <Icon name="info" size={24} color="#666" />
+            {/* <Icon name="info" size={24} color="#666" /> */}
             <Text style={styles.aboutButtonText}>App Information</Text>
-            <Icon name="chevron-right" size={24} color="#ccc" />
+            {/* <Icon name="chevron-right" size={24} color="#ccc" /> */}
           </TouchableOpacity>
         </View>
 
