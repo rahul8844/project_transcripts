@@ -1,0 +1,36 @@
+diff --git a/node_modules/@react-native-voice/voice/android/build.gradle b/node_modules/@react-native-voice/voice/android/build.gradle
+index 8fce879..5e8e947 100644
+--- a/node_modules/@react-native-voice/voice/android/build.gradle
++++ b/node_modules/@react-native-voice/voice/android/build.gradle
+@@ -20,7 +20,9 @@ def DEFAULT_TARGET_SDK_VERSION = 28
+ def DEFAULT_SUPPORT_LIB_VERSION = "28.0.0"
+ 
+ android {
+-    compileSdkVersion rootProject.hasProperty('compileSdkVersion') ? rootProject.compileSdkVersion : DEFAULT_COMPILE_SDK_VERSION
++    namespace "com.wenkesj.voice"  // 👈 REQUIRED for AGP 8+
++
++    compileSdkVersion rootProject.hasProperty('compileSdkVersion') ? rootProject.compileSdkVersion : 34
+     buildToolsVersion rootProject.hasProperty('buildToolsVersion') ? rootProject.buildToolsVersion : DEFAULT_BUILD_TOOLS_VERSION
+ 
+     defaultConfig {
+@@ -41,9 +43,11 @@ buildscript {
+     if (project == rootProject) {
+         repositories {
+             jcenter()
++            google()
++            mavenCentral()
+         }
+         dependencies {
+-            classpath 'com.android.tools.build:gradle:3.3.2'
++            classpath 'com.android.tools.build:gradle:8.0.1'
+ 
+             // NOTE: Do not place your application dependencies here; they belong
+             // in the individual module build.gradle files
+@@ -54,6 +58,8 @@ buildscript {
+ allprojects {
+     repositories {
+         jcenter()
++        google()
++        mavenCentral()
+     }
+ }

@@ -1,61 +1,74 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
-import HomeScreen from './src/screens/HomeScreen/HomeScreen';
-import MenuListeningScreen from './src/screens/MenuListeningScreen/MenuListeningScreen';
+import SplashScreen from './src/screens/SplashScreen';
+import TabNavigator from './src/navigation/TabNavigator';
 import NotesScreen from './src/screens/NotesScreen';
-import SettingsScreen from './src/screens/SettingsScreen/SettingsScreen';
+import {COLORS} from './src/constants/constants';
+import {LanguageProvider} from './src/contexts/LanguageContext';
+import EventsScreen from './src/screens/EventsScreen/EventsScreen';
 
 export type RootStackParamList = {
-  Home: undefined;
+  Splash: undefined;
+  MainTabs: undefined;
   MenuListening: undefined;
   Notes: undefined;
   Settings: undefined;
+  Events: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
 
 const App = () => {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{flex: 1}}>
       <SafeAreaProvider>
-        <NavigationContainer>
-          <Stack.Navigator
-            initialRouteName="Home"
-            screenOptions={{
-              headerStyle: {
-                backgroundColor: '#2E7D32',
-              },
-              headerTintColor: '#fff',
-              headerTitleStyle: {
-                fontWeight: 'bold',
-              },
-            }}>
-            <Stack.Screen 
-              name="Home" 
-              component={HomeScreen} 
-              options={{ title: 'Menu Listener' }}
-            />
-            <Stack.Screen 
-              name="MenuListening" 
-              component={MenuListeningScreen} 
-              options={{ title: 'Listen to Menu' }}
-            />
-            <Stack.Screen 
-              name="Notes" 
-              component={NotesScreen} 
-              options={{ title: 'Menu Notes' }}
-            />
-            <Stack.Screen 
-              name="Settings" 
-              component={SettingsScreen} 
-              options={{ title: 'Settings' }}
-            />
-          </Stack.Navigator>
-        </NavigationContainer>
+        <LanguageProvider>
+          <NavigationContainer>
+            <Stack.Navigator
+              initialRouteName="Splash"
+              screenOptions={{
+                headerStyle: {
+                  backgroundColor: COLORS.HEADER_BG,
+                  elevation: 4,
+                  shadowColor: COLORS.BLACK,
+                  shadowOffset: {width: 0, height: 2},
+                  shadowOpacity: 0.2,
+                  shadowRadius: 4,
+                },
+                headerTintColor: COLORS.TEXT_WHITE,
+                headerTitleStyle: {
+                  fontWeight: 'bold',
+                  fontSize: 18,
+                },
+                title: 'Welcome to HariOm Caterers',
+              }}>
+              <Stack.Screen
+                name="Splash"
+                component={SplashScreen}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="MainTabs"
+                component={TabNavigator}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="Notes"
+                component={NotesScreen}
+                options={{title: 'Menu Notes'}}
+              />
+              <Stack.Screen
+                name="Events"
+                component={EventsScreen}
+                options={{title: 'Events'}}
+              />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </LanguageProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );
