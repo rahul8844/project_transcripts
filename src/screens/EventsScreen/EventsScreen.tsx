@@ -8,6 +8,8 @@ import {
   Modal,
   Alert,
   Image,
+  Platform,
+  PermissionsAndroid,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -234,16 +236,37 @@ const EventsScreen: React.FC = () => {
         </body>
       </html>`;
 
-      const fileName = `${event.eventName.replace(/\s+/g, '_')}_${event.id}`;
+      const fileName = `${client?.name}_${event.eventName.replace(/\s+/g, '_')}_${event.id}`;
       const {filePath} = await RNHTMLtoPDF.convert({
         html,
         fileName,
         base64: false,
-        directory: 'Documents',
+        directory: Platform.OS === 'android' ? 'Download' : 'Documents',
       });
 
       // Ensure file exists and return path
       if (filePath && (await RNFS.exists(filePath))) {
+        if (Platform.OS === 'android') {
+          try {
+            // Try to place into public ~/Download
+            // Request legacy permission where applicable (SDK <= 28)
+            await PermissionsAndroid.request(
+              PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+            );
+          } catch {}
+          const downloadsRoot =
+            // Prefer RNFS provided path, fallback to common external path
+            (RNFS as any).DownloadDirectoryPath ||
+            `${(RNFS as any).ExternalStorageDirectoryPath}/Download`;
+          const publicDest = `${downloadsRoot}/${fileName}.pdf`;
+          try {
+            await RNFS.copyFile(filePath, publicDest);
+            return publicDest;
+          } catch (copyErr) {
+            // Fall back to app-specific path
+            return filePath;
+          }
+        }
         return filePath;
       }
       return filePath || null;
