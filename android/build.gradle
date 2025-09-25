@@ -2,10 +2,10 @@
 
 buildscript {
     ext {
-        buildToolsVersion = "33.0.0"
+        buildToolsVersion = "34.0.0"
         minSdkVersion = 21
-        compileSdkVersion = 33
-        targetSdkVersion = 33
+        compileSdkVersion = 34
+        targetSdkVersion = 34
 
         // We use NDK 23 which has both M1 support and is the side-by-side NDK version from AGP.
         ndkVersion = "23.1.7779620"
@@ -14,6 +14,7 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://www.jitpack.io' }
     }
     dependencies {
         classpath("com.android.tools.build:gradle")
@@ -21,3 +22,41 @@ buildscript {
         classpath("com.facebook.react:react-native-gradle-plugin")
     }
 }
+
+// gradle.projectsEvaluated {
+//     def voiceProject = rootProject.findProject(":react-native-voice_voice")
+//     if (voiceProject != null) {
+//         voiceProject.tasks.configureEach { task ->
+//                     // Handle JNI libs tasks
+//             if (task.name.matches(/copy.*JniLibs.*/)) {
+//                 def variant = (task.name =~ /(Debug|Release)/)[0][0]
+//                 def stripTaskName = "strip${variant}DebugSymbols"
+//                 def stripTask = voiceProject.tasks.findByName(stripTaskName)
+//                 if (stripTask != null) {
+//                     task.dependsOn(stripTask)
+//                     println("⚡ Applied fix: ${task.path} dependsOn ${stripTask.path}")
+//                 }
+//             }
+            
+//             // Handle resource merge/deepLink/lint tasks
+//             if (task.name.matches(/(package|extractDeepLinks|lintReport).*Debug.*/)) {
+//                 def variantMatch = (task.name =~ /(Debug|Release)/)
+//                 if (!variantMatch.find()) return
+
+//                 def variant = variantMatch.group(1)
+//                 // Wire them to compile/generate resource tasks if they exist
+//                 def compileTask = voiceProject.tasks.findByName("compile${variant}Renderscript")
+//                 def resValuesTask = voiceProject.tasks.findByName("generate${variant}ResValues")
+
+//                 if (compileTask != null) {
+//                     task.dependsOn(compileTask)
+//                     println("⚡ react-native-voice fix: ${task.path} dependsOn ${compileTask.path}")
+//                 }
+//                 if (resValuesTask != null) {
+//                     task.dependsOn(resValuesTask)
+//                     println("⚡ react-native-voice fix: ${task.path} dependsOn ${resValuesTask.path}")
+//                 }
+//             }
+//         }
+//     }
+// }
