@@ -398,8 +398,9 @@ export const en = {
     tapToSelect: 'Tap to select',
     noItems: 'No items',
     back: 'Back',
-    next: 'Next',
+    next: 'Save & Next',
     saveEvent: 'Save Event',
+    cancel: 'Cancel',
     eventSaved: 'Event created successfully',
     eventSaveFailed: 'Failed to save event',
     eventType: 'Event Type',
@@ -435,5 +436,16 @@ export const en = {
     past: 'Past',
     upcoming: 'Upcoming',
     today: "Today's",
+  },
+
+  // Contact Selector
+  contactSelector: {
+    searchPlaceholder: 'Search contacts...',
+    noContacts: 'No contacts available',
+    noResults: 'No contacts found matching your search',
+    loadingContacts: 'Loading contacts...',
+    retry: 'Retry',
+    permissionDenied: 'Contact permission denied',
+    errorLoadingContacts: 'Failed to load contacts',
   },
 };

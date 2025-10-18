@@ -5,6 +5,13 @@ const styles = StyleSheet.create({
   wrapper: {
     position: 'relative',
     justifyContent: 'center',
+    backgroundColor: COLORS.WHITE,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: COLORS.CARD_BORDER,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginBottom: 10,
   },
   wrapperMultiline: {
     minHeight: 44,

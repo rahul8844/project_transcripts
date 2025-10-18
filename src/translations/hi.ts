@@ -43,8 +43,7 @@ export const hi = {
     cateringClientManagement: 'केटरिंग ग्राहक प्रबंधन',
     cateringQuickActions: 'केटरिंग त्वरित कार्य',
     cateringMenu: 'केटरिंग मेनू',
-    manageClients:
-      'अपने केटरिंग ग्राहकों का प्रबंधन करें',
+    manageClients: 'अपने केटरिंग ग्राहकों का प्रबंधन करें',
     fastAccess: 'आवश्यक केटरिंग प्रबंधन उपकरणों तक त्वरित पहुंच',
     authenticCuisine: 'आपके विशेष आयोजनों के लिए प्रामाणिक भारतीय व्यंजन',
   },
@@ -375,7 +374,8 @@ export const hi = {
     tapToSelect: 'चयन करने के लिए टैप करें',
     noItems: 'कोई आइटम नहीं',
     back: 'पीछे',
-    next: 'अगला',
+    next: 'सहेजें और अगला',
+    cancel: 'रद्द करें',
     saveEvent: 'इवेंट सहेजें',
     eventSaved: 'इवेंट सफलतापूर्वक बनाया गया',
     eventSaveFailed: 'इवेंट सहेजने में विफल',
@@ -406,5 +406,16 @@ export const hi = {
     events: 'इवेंट',
     clients: 'ग्राहक',
     menuItems: 'मेनू',
+  },
+
+  // Contact Selector
+  contactSelector: {
+    searchPlaceholder: 'संपर्क खोजें...',
+    noContacts: 'कोई संपर्क उपलब्ध नहीं',
+    noResults: 'आपकी खोज से मेल खाने वाला कोई संपर्क नहीं मिला',
+    loadingContacts: 'संपर्क लोड हो रहे हैं...',
+    retry: 'पुनः प्रयास करें',
+    permissionDenied: 'संपर्क अनुमति अस्वीकृत',
+    errorLoadingContacts: 'संपर्क लोड करने में विफल',
   },
 };

@@ -16,7 +16,6 @@ const VoiceTextInput: React.FC<VoiceTextInputProps> = ({
   placeholder,
   keyboardType = 'default',
   multiline = false,
-  style,
   editable = true,
   ...rest
 }) => {
@@ -114,12 +113,7 @@ const VoiceTextInput: React.FC<VoiceTextInputProps> = ({
   };
 
   return (
-    <View
-      style={[
-        multiline && styles.wrapperMultiline,
-        style,
-        {position: 'relative'},
-      ]}>
+    <View style={[styles.wrapper, multiline && styles.wrapperMultiline]}>
       <TextInput
         style={[styles.input, multiline && styles.inputMultiline]}
         placeholder={placeHolderText}

@@ -7,14 +7,12 @@ import styles from './style';
 const Header = props => {
   const {title = '', subtitle = ''} = props;
   return (
-    // <View style={styles.container}>
     <View style={styles.header}>
       <CateringLogo size="large" />
       <LanguageSwitcher size="small" />
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.subtitle}>{subtitle}</Text>
     </View>
-    // </View>
   );
 };
 
