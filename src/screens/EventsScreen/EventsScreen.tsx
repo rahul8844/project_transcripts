@@ -2,7 +2,6 @@ import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
   TouchableOpacity,
   Modal,
@@ -14,9 +13,7 @@ import {
 import {SafeAreaView} from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {COLORS} from '../../constants/constants';
-import EventEditForm, {
-  EditableEvent,
-} from '../../components/EventEditForm/EventEditForm';
+import EventForm from '../../components/EventForm/EventForm';
 import {useLanguage} from '../../contexts/LanguageContext';
 import {useFocusEffect} from '@react-navigation/native';
 import Header from '../../components/Header';
@@ -24,6 +21,7 @@ import {useRoute} from '@react-navigation/native';
 import RNFS from 'react-native-fs';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import Images from '../../assets';
+import styles from './styles';
 
 type StoredEvent = {
   id: string;
@@ -50,7 +48,7 @@ const EventsScreen: React.FC = () => {
   const [clientsById, setClientsById] = useState<Record<string, StoredClient>>(
     {},
   );
-  const [editingEvent, setEditingEvent] = useState<EditableEvent | null>(null);
+  const [editingEvent, setEditingEvent] = useState<IEvent | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
 
   const load = useCallback(async () => {
@@ -216,11 +214,11 @@ const EventsScreen: React.FC = () => {
               : ''
           }
           ${
-            (event as any).address
+            (event as any).eventAddress
               ? `<div class="row"><span class="label">${
                   labels.address
                 }:</span><span class="value">${
-                  (event as any).address
+                  (event as any).eventAddress
                 }</span></div>`
               : ''
           }
@@ -236,7 +234,10 @@ const EventsScreen: React.FC = () => {
         </body>
       </html>`;
 
-      const fileName = `${client?.name}_${event.eventName.replace(/\s+/g, '_')}_${event.id}`;
+      const fileName = `${client?.name}_${event.eventName.replace(
+        /\s+/g,
+        '_',
+      )}_${event.id}`;
       const {filePath} = await RNHTMLtoPDF.convert({
         html,
         fileName,
@@ -311,7 +312,7 @@ const EventsScreen: React.FC = () => {
           <View style={{flexDirection: 'row', gap: 8}}>
             <TouchableOpacity
               onPress={() => {
-                setEditingEvent(item as unknown as EditableEvent);
+                setEditingEvent(item as unknown as IEvent);
                 setShowEditModal(true);
               }}>
               <Text style={styles.linkText}>{t('common.edit')}</Text>
@@ -358,10 +359,10 @@ const EventsScreen: React.FC = () => {
             <Text style={styles.value}>{client.phone}</Text>
           </View>
         )}
-        {Boolean((item as any).address) && (
+        {Boolean((item as any).eventAddress) && (
           <View style={styles.row}>
             <Text style={styles.label}>Address:</Text>
-            <Text style={styles.value}>{(item as any).address}</Text>
+            <Text style={styles.value}>{(item as any).eventAddress}</Text>
           </View>
         )}
         {!!item.guests && (
@@ -425,7 +426,7 @@ const EventsScreen: React.FC = () => {
         <View style={styles.modalBackdrop}>
           <View style={styles.modalCard}>
             {editingEvent && (
-              <EventEditForm
+              <EventForm
                 event={editingEvent}
                 onSaved={updated => {
                   setShowEditModal(false);
@@ -444,110 +445,5 @@ const EventsScreen: React.FC = () => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.PRIMARY_APP,
-  },
-  header: {
-    padding: 20,
-    backgroundColor: COLORS.HEADER_BG,
-    borderBottomWidth: 2,
-    borderBottomColor: COLORS.ACCENT_APP,
-  },
-  title: {
-    color: COLORS.TEXT_WHITE,
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  card: {
-    backgroundColor: COLORS.WHITE,
-    margin: 12,
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: COLORS.CARD_BORDER,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  eventTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: COLORS.TEXT_PRIMARY,
-  },
-  eventDate: {
-    fontSize: 12,
-    color: COLORS.TEXT_SECONDARY,
-  },
-  row: {
-    flexDirection: 'row',
-    marginTop: 4,
-  },
-  label: {
-    width: 70,
-    color: COLORS.TEXT_SECONDARY,
-  },
-  value: {
-    color: COLORS.TEXT_PRIMARY,
-    flex: 1,
-  },
-  menuContainer: {
-    marginTop: 8,
-  },
-  menuTitle: {
-    fontWeight: '600',
-    color: COLORS.TEXT_PRIMARY,
-    marginBottom: 6,
-  },
-  tags: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 6,
-  },
-  tag: {
-    backgroundColor: COLORS.EXTRA_LIGHT_GRAY,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: COLORS.CARD_BORDER,
-  },
-  tagText: {
-    fontSize: 12,
-    color: COLORS.TEXT_SECONDARY,
-  },
-  linkText: {
-    color: COLORS.ACCENT_APP,
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  empty: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyText: {
-    color: COLORS.TEXT_MUTED,
-  },
-  flexFill: {
-    flex: 1,
-  },
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'flex-end',
-  },
-  modalCard: {
-    backgroundColor: COLORS.WHITE,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    borderWidth: 1,
-    borderColor: COLORS.CARD_BORDER,
-  },
-});
 
 export default EventsScreen;

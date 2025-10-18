@@ -119,15 +119,6 @@ const styles = StyleSheet.create({
     color: COLORS.TEXT_PRIMARY,
     marginBottom: 12,
   },
-  input: {
-    backgroundColor: COLORS.WHITE,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: COLORS.CARD_BORDER,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    marginBottom: 10,
-  },
   tipItem: {
     flexDirection: 'row',
     alignItems: 'flex-start',

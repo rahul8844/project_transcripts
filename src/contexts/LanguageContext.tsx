@@ -1,4 +1,10 @@
-import React, {createContext, useContext, useState, useEffect, ReactNode} from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {LANGUAGES, DEFAULT_LANGUAGE, Language} from '../constants/languages';
 import {en} from '../translations/en';
@@ -11,7 +17,9 @@ interface LanguageContextType {
   isRTL: boolean;
 }
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+const LanguageContext = createContext<LanguageContextType | undefined>(
+  undefined,
+);
 
 const translations = {
   [LANGUAGES.ENGLISH]: en,
@@ -22,7 +30,9 @@ interface LanguageProviderProps {
   children: ReactNode;
 }
 
-export const LanguageProvider: React.FC<LanguageProviderProps> = ({children}) => {
+export const LanguageProvider: React.FC<LanguageProviderProps> = ({
+  children,
+}) => {
   const [language, setLanguageState] = useState<Language>(DEFAULT_LANGUAGE);
 
   useEffect(() => {
@@ -32,7 +42,10 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({children}) =>
   const loadLanguage = async () => {
     try {
       const savedLanguage = await AsyncStorage.getItem('selectedLanguage');
-      if (savedLanguage && Object.values(LANGUAGES).includes(savedLanguage as Language)) {
+      if (
+        savedLanguage &&
+        Object.values(LANGUAGES).includes(savedLanguage as Language)
+      ) {
         setLanguageState(savedLanguage as Language);
       }
     } catch (error) {
@@ -52,7 +65,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({children}) =>
   const t = (key: string): string => {
     const keys = key.split('.');
     let value: any = translations[language];
-    
+
     for (const k of keys) {
       if (value && typeof value === 'object' && k in value) {
         value = value[k];
@@ -69,7 +82,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({children}) =>
         break;
       }
     }
-    
+
     return typeof value === 'string' ? value : key;
   };
 

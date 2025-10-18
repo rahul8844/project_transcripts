@@ -1,20 +1,14 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
+import React, {useCallback, useMemo, useState} from 'react';
+import {View, Text, FlatList, TouchableOpacity, Alert} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {COLORS} from '../../constants/constants';
 import {useLanguage} from '../../contexts/LanguageContext';
 import {ButtonPrimary} from '../ButtonPrimary';
 import VoiceTextInput from '../VoiceTextInput/VoiceTextInput';
-import DateTextInput from '../DateTextInput/DateTextInput';
-import AddClientForm, {SavedClient} from '../AddClientForm';
+import ClientForm from '../ClientForm';
+import ContactSelector, {Contact} from '../ContactSelector';
 import {useMenu} from '../../hooks/useMenu';
+import EventForm from '../EventForm/EventForm';
+import styles from './styles';
 
 export type WizardEvent = {
   id: string;
@@ -39,56 +33,62 @@ interface EventWizardProps {
   onCancel?: () => void;
 }
 
-type ClientMode = 'new' | 'existing';
+
+// Helper functions to convert between Contact and WizardClient formats
+const wizardClientToContact = (client: WizardClient): Contact => ({
+  id: client.id,
+  name: client.name,
+  phoneNumber: client.phone,
+  email: client.email,
+});
+
+const contactToWizardClient = (contact: Contact): WizardClient => ({
+  // id: contact.id,
+  id: '',
+  name: contact.name,
+  phone: contact.phoneNumber,
+  email: contact.email,
+});
 
 const EventWizard: React.FC<EventWizardProps> = ({onSaved, onCancel}) => {
   const {t} = useLanguage();
   const {Menu: MenuCategory} = useMenu();
   const [step, setStep] = useState<number>(0);
-  const [clientMode, setClientMode] = useState<ClientMode>('new');
   const [clients, setClients] = useState<WizardClient[]>([]);
-  const [search, setSearch] = useState('');
   const [selectedClientId, setSelectedClientId] = useState<string>('');
+  const [selectedContact, setSelectedContact] = useState<IClient | null>(null);
+
   // Event fields
-  const [eventName, setEventName] = useState('');
-  const [date, setDate] = useState('');
-  const [guests, setGuests] = useState('');
-  const [eventAddress, setEventAddress] = useState('');
-  const [eventType, setEventType] = useState<string>('other');
+  const [event, setEvent] = useState<IEvent>({
+    eventName: '',
+    date: '',
+    guests: 0,
+    eventAddress: '',
+    eventType: '',
+  });
+
   // Menu selection
   const [menuQuery, setMenuQuery] = useState('');
   const [selectedMenu, setSelectedMenu] = useState<Set<string>>(new Set());
   const externalClientSaveRef = React.useRef<
-    null | (() => Promise<SavedClient | null>)
+    null | (() => Promise<IClient | null>)
   >(null);
 
-  const DEFAULT_MENU = useMemo(() => Array.from(new Set(MenuCategory.flatMap(category =>
-      category.items.map(item => item.name),
-    ))),
+  const externalEventSaveRef = React.useRef<
+    null | (() => Promise<IEvent | null>)
+  >(null);
+
+  const DEFAULT_MENU = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          MenuCategory.flatMap(category =>
+            category.items.map(item => item.name),
+          ),
+        ),
+      ),
     [MenuCategory],
   );
-  useEffect(() => {
-    const loadClients = async () => {
-      try {
-        const existing = await AsyncStorage.getItem('clients');
-        setClients(existing ? JSON.parse(existing) : []);
-      } catch (e) {
-        // ignore
-      }
-    };
-    loadClients();
-  }, []);
-
-  const filteredClients = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    if (!q) {
-      return clients;
-    }
-    return clients.filter(
-      c =>
-        c.name.toLowerCase().includes(q) || c.phone.toLowerCase().includes(q),
-    );
-  }, [clients, search]);
 
   const filteredMenu = useMemo(() => {
     const q = menuQuery.trim().toLowerCase();
@@ -110,20 +110,36 @@ const EventWizard: React.FC<EventWizardProps> = ({onSaved, onCancel}) => {
     });
   }, []);
 
-  const validateClientStep = async (): Promise<string | null> => {
-    if (!selectedClientId) {
-      return clientMode === 'new'
-        ? t('forms.saveClientFirst')
-        : t('forms.selectExistingClient');
-    }
-    return null;
+  const handleContactSelect = (contact: Contact) => {
+    setSelectedContact(contactToWizardClient(contact));
+    setSelectedClientId(contact.id);
   };
 
-  const validateEventStep = (): string | null => {
-    if (!eventName.trim()) {
+  const handleContactsLoaded = (contacts: Contact[]) => {
+    // Convert device contacts to wizard clients and merge with existing clients
+    const deviceClients = contacts.map(contactToWizardClient);
+    const mergedClients = [
+      ...clients,
+      ...deviceClients.filter(
+        deviceClient =>
+          !clients.some(
+            existingClient => existingClient.id === deviceClient.id,
+          ),
+      ),
+    ];
+    setClients(mergedClients);
+  };
+
+  const handleContactError = (error: string) => {
+    console.error('Contact loading error:', error);
+    // Still allow using existing clients even if device contacts fail
+  };
+
+  const validateEventStep = (eventDetails: IEvent): string | null => {
+    if (!eventDetails.eventName.trim()) {
       return 'Event name is required';
     }
-    if (guests && isNaN(Number(guests))) {
+    if (eventDetails.guests && isNaN(Number(eventDetails.guests))) {
       return 'Guests must be a number';
     }
     return null;
@@ -131,42 +147,45 @@ const EventWizard: React.FC<EventWizardProps> = ({onSaved, onCancel}) => {
 
   const handleNext = async () => {
     if (step === 0) {
-      // If creating new client and not yet selected, auto-save the client
-      if (
-        clientMode === 'new' &&
-        !selectedClientId &&
-        externalClientSaveRef.current
-      ) {
-        const saved = await externalClientSaveRef.current();
-        if (saved) {
-          setSelectedClientId(saved.id);
-          await reloadClients();
-          setClientMode('existing');
-          setSearch(saved.name);
-        } else {
-          return;
-        }
-      }
-      const err = await validateClientStep();
-      if (err) {
-        Alert.alert(t('forms.validation'), err);
-        return;
-      }
       setStep(1);
       return;
     }
     if (step === 1) {
-      const err = validateEventStep();
-      if (err) {
-        Alert.alert(t('forms.validation'), err);
+      // If creating new client and not yet selected, auto-save the client
+      if (externalClientSaveRef.current) {
+        const saved = await externalClientSaveRef.current();
+        if (saved) {
+          setSelectedContact(saved);
+          setSelectedClientId(saved.id);
+        } else {
+          return;
+        }
+      } else {
+        Alert.alert(t('forms.validation'), t('forms.saveClientFirst'));
         return;
       }
-      setStep(2);
-      return;
     }
     if (step === 2) {
+      if (externalEventSaveRef.current) {
+        const saved = await externalEventSaveRef.current();
+        const err = validateEventStep(saved as IEvent);
+        if (err) {
+          Alert.alert(t('forms.validation'), err);
+          return;
+        }
+        if (saved) {
+          setEvent(saved);
+        } else {
+          return;
+        }
+      } else {
+        return;
+      }
+    }
+    if (step === 3) {
       await handleSave();
     }
+    setStep(prev => prev + 1);
   };
 
   const handleBack = () => {
@@ -178,7 +197,7 @@ const EventWizard: React.FC<EventWizardProps> = ({onSaved, onCancel}) => {
   };
 
   const handleSave = async () => {
-    const err = validateEventStep();
+    const err = validateEventStep(event as IEvent);
     if (err) {
       Alert.alert(t('forms.validation'), err);
       return;
@@ -191,14 +210,14 @@ const EventWizard: React.FC<EventWizardProps> = ({onSaved, onCancel}) => {
       const newEvent: WizardEvent = {
         id: `${Date.now()}`,
         clientId: selectedClientId,
-        eventName: eventName.trim(),
-        date: date.trim() || undefined,
-        guests: guests ? Number(guests) : undefined,
+        eventName: event.eventName.trim(),
+        date: event.date?.trim() || undefined,
+        guests: event.guests ? Number(event.guests) : undefined,
         menuItems: Array.from(selectedMenu),
         createdAt: new Date().toISOString(),
       };
-      (newEvent as any).address = eventAddress.trim() || undefined;
-      (newEvent as any).eventType = eventType;
+      (newEvent as any).eventAddress = event.eventAddress?.trim() || undefined;
+      (newEvent as any).eventType = event.eventType;
       await AsyncStorage.setItem(
         'events',
         JSON.stringify([newEvent, ...existingEvents]),
@@ -219,144 +238,53 @@ const EventWizard: React.FC<EventWizardProps> = ({onSaved, onCancel}) => {
       <View style={[styles.stepDot, step >= 1 && styles.stepDotActive]} />
       <View style={[styles.stepBar, step >= 2 && styles.stepBarActive]} />
       <View style={[styles.stepDot, step >= 2 && styles.stepDotActive]} />
+      <View style={[styles.stepBar, step >= 3 && styles.stepBarActive]} />
+      <View style={[styles.stepDot, step >= 3 && styles.stepDotActive]} />
     </View>
   );
 
-  const reloadClients = async () => {
-    try {
-      const existing = await AsyncStorage.getItem('clients');
-      setClients(existing ? JSON.parse(existing) : []);
-    } catch {}
-  };
-
-  const renderClientStep = () => (
+  const renderContacts = () => (
     <View>
-      <Text style={styles.sectionTitle}>{t('forms.client')}</Text>
-      <View style={styles.radioRow}>
-        <TouchableOpacity
-          style={[
-            styles.radioOption,
-            clientMode === 'new' && styles.radioSelected,
-          ]}
-          onPress={() => setClientMode('new')}>
-          <Text style={styles.radioText}>{t('forms.newClient')}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            styles.radioOption,
-            clientMode === 'existing' && styles.radioSelected,
-          ]}
-          onPress={() => setClientMode('existing')}>
-          <Text style={styles.radioText}>{t('forms.existingClient')}</Text>
-        </TouchableOpacity>
-      </View>
-
-      {clientMode === 'new' ? (
-        <AddClientForm
-          hideActions
-          hideTitle
-          registerExternalSave={fn => {
-            externalClientSaveRef.current = fn;
-          }}
-          onSaved={client => {
-            setSelectedClientId(client.id);
-            reloadClients();
-            setClientMode('existing');
-            setSearch(client.name);
-          }}
-          onCancel={() => setClientMode('existing')}
-        />
-      ) : (
-        <View>
-          <VoiceTextInput
-            style={styles.input}
-            placeholder={t('forms.searchClients')}
-            value={search}
-            onChangeText={setSearch}
-          />
-          <FlatList
-            data={filteredClients}
-            keyExtractor={item => item.id}
-            style={styles.list}
-            renderItem={({item}) => (
-              <TouchableOpacity
-                style={[
-                  styles.listItem,
-                  selectedClientId === item.id && styles.listItemSelected,
-                ]}
-                onPress={() => setSelectedClientId(item.id)}>
-                <Text style={styles.clientName}>{item.name}</Text>
-                <Text style={styles.clientPhone}>{item.phone}</Text>
-              </TouchableOpacity>
-            )}
-            ListEmptyComponent={
-              <Text style={styles.emptyText}>{t('forms.noItems')}</Text>
-            }
-          />
+      <Text style={styles.subsectionTitle}>{t('forms.searchClients')}</Text>
+      <ContactSelector
+        contacts={clients.map(wizardClientToContact)}
+        onContactSelect={handleContactSelect}
+        onContactsLoaded={handleContactsLoaded}
+        onError={handleContactError}
+        placeholder={t('forms.searchClients')}
+        showSearchBar={true}
+        maxHeight={300}
+        useDeviceContacts={true}
+        debugMode={true}
+        style={styles.contactSelector}
+      />
+      {selectedContact && (
+        <View style={styles.selectedClientInfo}>
+          <Text style={styles.selectedClientText}>
+            {t('forms.selected')}: {selectedContact.name}
+          </Text>
+          <Text style={styles.selectedClientPhone}>
+            {selectedContact.phone}
+          </Text>
         </View>
       )}
     </View>
   );
 
-  const renderEventStep = () => (
+  const renderClientStep = () => (
     <View>
-      <Text style={styles.sectionTitle}>{t('forms.eventDetails')}</Text>
-      <VoiceTextInput
-        style={styles.input}
-        placeholder={t('forms.eventNameReq')}
-        value={eventName}
-        onChangeText={setEventName}
-        setPlaceHolderText={() => {}}
+      <Text style={styles.sectionTitle}>{t('forms.client')}</Text>
+      <ClientForm
+        client={selectedContact}
+        onSaved={fn => {
+          externalClientSaveRef.current = fn;
+        }}
+        hideTitle
+        hideActions
+        registerExternalSave={fn => {
+          externalClientSaveRef.current = fn;
+        }}
       />
-      <DateTextInput
-        style={styles.input}
-        placeholder={t('forms.datePlaceholder')}
-        value={date}
-        onChangeText={setDate}
-      />
-      <VoiceTextInput
-        style={styles.input}
-        placeholder={t('forms.guestsPlaceholder')}
-        keyboardType="numeric"
-        value={guests}
-        onChangeText={setGuests}
-        setPlaceHolderText={() => {}}
-      />
-      <VoiceTextInput
-        style={styles.input}
-        placeholder={t('forms.eventAddress')}
-        value={eventAddress}
-        onChangeText={setEventAddress}
-        setPlaceHolderText={() => {}}
-        multiline
-      />
-      <Text style={styles.sectionTitle}>{t('forms.eventType')}</Text>
-      <View style={styles.typeRow}>
-        {[
-          {key: 'wedding'},
-          {key: 'engagement'},
-          {key: 'birthday'},
-          {key: 'corporate'},
-          {key: 'grievance'},
-          {key: 'other'},
-        ].map(ti => (
-          <TouchableOpacity
-            key={ti.key}
-            style={[
-              styles.typePill,
-              eventType === ti.key && styles.typePillSelected,
-            ]}
-            onPress={() => setEventType(ti.key)}>
-            <Text
-              style={[
-                styles.typePillText,
-                eventType === ti.key && styles.typePillTextSelected,
-              ]}>
-              {t(`forms.eventTypes.${ti.key}`)}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
     </View>
   );
 
@@ -364,7 +292,6 @@ const EventWizard: React.FC<EventWizardProps> = ({onSaved, onCancel}) => {
     <View>
       <Text style={styles.sectionTitle}>{t('forms.menuSelection')}</Text>
       <VoiceTextInput
-        style={styles.input}
         placeholder={t('forms.searchMenu')}
         value={menuQuery}
         onChangeText={setMenuQuery}
@@ -396,154 +323,36 @@ const EventWizard: React.FC<EventWizardProps> = ({onSaved, onCancel}) => {
   return (
     <View style={styles.container}>
       {renderStepHeader()}
-      {step === 0 && renderClientStep()}
-      {step === 1 && renderEventStep()}
-      {step === 2 && renderMenuStep()}
-
+      {step === 0 && renderContacts()}
+      {step === 1 && renderClientStep()}
+      {step === 2 && (
+        <EventForm
+          event={event}
+          hideActions={true}
+          onCancel={handleBack}
+          onSaved={() => {}}
+          registerExternalSave={fn => {
+            externalEventSaveRef.current = fn;
+          }}
+        />
+      )}
+      {step === 3 && renderMenuStep()}
       <View style={styles.footer}>
         <View style={styles.footerHalf}>
           <ButtonPrimary
-            title={step === 0 ? t('quickActions.cancel') : t('forms.back')}
+            title={step > 0 ? t('forms.back') : t('forms.cancel')}
             onPress={handleBack}
           />
         </View>
         <View style={styles.footerHalf}>
-          {step < 2 ? (
-            <ButtonPrimary title={t('forms.next')} onPress={handleNext} />
-          ) : (
-            <ButtonPrimary title={t('forms.saveEvent')} onPress={handleSave} />
-          )}
+          <ButtonPrimary
+            title={step < 3 ? t('forms.next') : t('forms.saveEvent')}
+            onPress={handleNext}
+          />
         </View>
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-  },
-  stepHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  stepDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: COLORS.CARD_BORDER,
-  },
-  stepDotActive: {
-    backgroundColor: COLORS.ACCENT_APP,
-  },
-  stepBar: {
-    height: 2,
-    flex: 1,
-    backgroundColor: COLORS.CARD_BORDER,
-    marginHorizontal: 6,
-  },
-  stepBarActive: {
-    backgroundColor: COLORS.ACCENT_APP,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: COLORS.TEXT_PRIMARY,
-    marginBottom: 12,
-  },
-  radioRow: {
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 12,
-  },
-  radioOption: {
-    flex: 1,
-    backgroundColor: COLORS.WHITE,
-    borderWidth: 1,
-    borderColor: COLORS.CARD_BORDER,
-    paddingVertical: 10,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  radioSelected: {
-    borderColor: COLORS.ACCENT_APP,
-  },
-  radioText: {
-    color: COLORS.TEXT_PRIMARY,
-    fontWeight: '600',
-  },
-  input: {
-    backgroundColor: COLORS.WHITE,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: COLORS.CARD_BORDER,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    marginBottom: 10,
-  },
-  list: {
-    maxHeight: 240,
-  },
-  listItem: {
-    backgroundColor: COLORS.WHITE,
-    borderWidth: 1,
-    borderColor: COLORS.CARD_BORDER,
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 8,
-  },
-  listItemSelected: {
-    borderColor: COLORS.ACCENT_APP,
-  },
-  clientName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: COLORS.TEXT_PRIMARY,
-  },
-  clientPhone: {
-    fontSize: 12,
-    color: COLORS.TEXT_SECONDARY,
-  },
-  emptyText: {
-    color: COLORS.TEXT_MUTED,
-    textAlign: 'center',
-    paddingVertical: 12,
-  },
-  footer: {
-    flexDirection: 'row',
-    gap: 12,
-    marginTop: 8,
-  },
-  footerHalf: {
-    flex: 1,
-  },
-  typeRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  typePill: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: COLORS.CARD_BORDER,
-    backgroundColor: COLORS.WHITE,
-    marginBottom: 8,
-  },
-  typePillSelected: {
-    borderColor: COLORS.ACCENT_APP,
-    backgroundColor: COLORS.EXTRA_LIGHT_GRAY,
-  },
-  typePillText: {
-    color: COLORS.TEXT_PRIMARY,
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  typePillTextSelected: {
-    color: COLORS.ACCENT_APP,
-  },
-});
 
 export default EventWizard;

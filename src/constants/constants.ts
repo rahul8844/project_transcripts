@@ -37,6 +37,7 @@ export const COLORS = {
   ERROR_RED: '#d32f2f',
   WARNING_ORANGE: '#FF9800',
   INFO_BLUE: '#1976D2',
+  HOT_RED: '#8B0000',
 } as const;
 
 export const SIZES = {
