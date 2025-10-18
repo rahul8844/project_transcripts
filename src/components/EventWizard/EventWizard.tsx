@@ -56,7 +56,14 @@ const EventWizard: React.FC<EventWizardProps> = ({onSaved, onCancel}) => {
   const [step, setStep] = useState<number>(0);
   const [clients, setClients] = useState<WizardClient[]>([]);
   const [selectedClientId, setSelectedClientId] = useState<string>('');
-  const [selectedContact, setSelectedContact] = useState<IClient | null>(null);
+  const [selectedContact, setSelectedContact] = useState<IClient>({
+    id: '',
+    name: '',
+    phone: '',
+    email: '',
+    address: '',
+    isVip: false,
+  });
 
   // Event fields
   const [event, setEvent] = useState<IEvent>({
@@ -250,15 +257,16 @@ const EventWizard: React.FC<EventWizardProps> = ({onSaved, onCancel}) => {
         contacts={clients.map(wizardClientToContact)}
         onContactSelect={handleContactSelect}
         onContactsLoaded={handleContactsLoaded}
+        onNewClient={handleNext}
         onError={handleContactError}
         placeholder={t('forms.searchClients')}
         showSearchBar={true}
         maxHeight={300}
         useDeviceContacts={true}
-        debugMode={true}
+        showNewClientButton={true}
         style={styles.contactSelector}
       />
-      {selectedContact && (
+      {selectedContact?.phone && (
         <View style={styles.selectedClientInfo}>
           <Text style={styles.selectedClientText}>
             {t('forms.selected')}: {selectedContact.name}

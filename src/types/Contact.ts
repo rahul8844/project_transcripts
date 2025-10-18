@@ -9,14 +9,15 @@ export interface Contact {
 
 export interface ContactSelectorProps {
   contacts?: Contact[]; // Optional - if not provided, will fetch from device
-  onContactSelect: (contact: Contact) => void;
-  onSearchChange?: (searchText: string) => void;
+  onNewClient?: () => void;
   placeholder?: string;
   showSearchBar?: boolean;
+  showNewClientButton?: boolean;
   maxHeight?: number;
   style?: any;
   useDeviceContacts?: boolean; // Whether to use device contacts or provided contacts
+  onContactSelect: (contact: Contact) => void;
+  onSearchChange?: (searchText: string) => void;
   onContactsLoaded?: (contacts: Contact[]) => void;
   onError?: (error: string) => void;
-  debugMode?: boolean; // Enable debug logging
 }
