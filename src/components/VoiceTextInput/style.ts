@@ -12,6 +12,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     marginBottom: 10,
+    flexGrow: 1,
   },
   wrapperMultiline: {
     minHeight: 44,

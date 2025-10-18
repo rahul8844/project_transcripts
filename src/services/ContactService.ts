@@ -77,9 +77,7 @@ class ContactService {
       const hasPermission = await this.checkPermissions();
       console.log('ContactService: Has permission:', hasPermission);
       if (!hasPermission) {
-        console.log('ContactService: Requesting permissions...');
         const granted = await this.requestPermissions();
-        console.log('ContactService: Permission granted:', granted);
         if (!granted) {
           throw new Error('Contact permission denied');
         }

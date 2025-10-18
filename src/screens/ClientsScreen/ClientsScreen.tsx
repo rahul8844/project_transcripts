@@ -210,8 +210,6 @@ const ClientsScreen: React.FC = () => {
     </TouchableOpacity>
   );
 
-  console.log('clients', clients);
-
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>

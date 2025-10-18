@@ -13,6 +13,7 @@ import {useLanguage} from '../../contexts/LanguageContext';
 import ContactService from '../../services/ContactService';
 import VoiceTextInput from '../VoiceTextInput/VoiceTextInput';
 import styles from './styles';
+import {ButtonPrimary} from '../ButtonPrimary';
 
 const ContactSelector: React.FC<ContactSelectorProps> = ({
   contacts,
@@ -20,10 +21,12 @@ const ContactSelector: React.FC<ContactSelectorProps> = ({
   onSearchChange,
   placeholder,
   showSearchBar = true,
+  showNewClientButton = false,
   maxHeight = 400,
   style,
   onContactsLoaded,
   onError,
+  onNewClient,
 }) => {
   const {t} = useLanguage();
   const [searchText, setSearchText] = useState('');
@@ -43,6 +46,10 @@ const ContactSelector: React.FC<ContactSelectorProps> = ({
 
   const handleContactPress = (contact: Contact) => {
     onContactSelect(contact);
+  };
+
+  const handleNewClient = () => {
+    onNewClient?.();
   };
 
   const handleRefresh = async () => {
@@ -87,12 +94,19 @@ const ContactSelector: React.FC<ContactSelectorProps> = ({
   const renderSearchBar = () => (
     <View style={styles.searchContainer}>
       <VoiceTextInput
-        // style={styles.searchInput}
         placeholder={placeholder || t('contactSelector.searchPlaceholder')}
         value={searchText}
         onChangeText={handleSearchChange}
         setPlaceHolderText={() => {}}
       />
+      {showNewClientButton ? (
+        <ButtonPrimary
+          title="+"
+          onPress={handleNewClient}
+          style={styles.newClientButton}
+          size="small"
+        />
+      ) : null}
     </View>
   );
 
